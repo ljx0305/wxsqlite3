@@ -1,13 +1,11 @@
-///////////////////////////////////////////////////////////////////////////////
-// Name:        wxsqlite3def.h
-// Purpose:     wxWidgets wrapper around the SQLite3 embedded database library.
-// Author:      Ulrich Telle
-// Created:     2005-07-14
-// Changes:     (see version history below, and accompanying readme file)
-//
-// Copyright:   (c) Ulrich Telle
-// Licence:     wxWindows licence
-///////////////////////////////////////////////////////////////////////////////
+  /*
+** Name:        wxsqlite3def.h
+** Purpose:     wxWidgets wrapper around the SQLite3 embedded database library.
+** Author:      Ulrich Telle
+** Created:     2005-07-14
+** Copyright:   (c) 2005-2021 Ulrich Telle
+** License:     LGPL-3.0+ WITH WxWindows-exception-3.1
+*/
 
 /// \file wxsqlite3def.h Compile time switches for the wxSQLite3 class
 
@@ -42,10 +40,221 @@
   since wxWidgets 2.8.4) are used for the conversion. Special care has to be taken if external administration
   tools are used to modify the database contents, since not all of these tools operate in Unicode or UTF-8 mode.
 
+\note With the release of SQLite version 3.32.0 on May 22, 2020 critical changes to the public SQLite code finally took officially effect, although they weren't officially announced. They were introduced on Feb 7, 2020: ["Simplify the code by removing the unsupported and undocumented SQLITE_HAS_CODEC compile-time option"](https://www.sqlite.org/src/timeline?c=5a877221ce90e752). Since August 2020 a new implementation of an encryption extension, capable of supporting SQLite version 3.32.0 and later, is available as a separate project, [**SQLite3 Multiple Ciphers**](https://github.com/utelle/SQLite3MultipleCiphers). Starting with the release of **wxSQLite3 4.6.0** this new implementation will be used.
+
 \section version Version history
 
 <dl>
 
+<dt><b>4.7.3</b> - <i>June 2021</i></dt>
+<dd>
+Upgrade to <i>SQLite3 Multiple Ciphers version 1.3.3 (SQLite version 3.36.0)</i><br>
+
+</dd>
+<dt><b>4.7.2</b> - <i>May 2021</i></dt>
+<dd>
+Upgrade to <i>SQLite3 Multiple Ciphers version 1.3.2 (SQLite version 3.35.5)</i><br>
+
+</dd>
+<dt><b>4.7.1</b> - <i>April 2021</i></dt>
+<dd>
+Upgrade to <i>SQLite3 Multiple Ciphers version 1.3.1 (SQLite version 3.35.5)</i><br>
+
+</dd>
+<dt><b>4.7.0</b> - <i>April 2021</i></dt>
+<dd>
+Upgrade to <i>SQLite3 Multiple Ciphers version 1.3.0 (SQLite version 3.35.5)</i><br>
+
+</dd>
+<dt><b>4.6.10</b> - <i>April 2021</i></dt>
+<dd>
+Upgrade to <i>SQLite3 Multiple Ciphers version 1.2.5 (SQLite version 3.35.5)</i><br>
+
+</dd>
+<dt><b>4.6.9</b> - <i>April 2021</i></dt>
+<dd>
+Upgrade to <i>SQLite3 Multiple Ciphers version 1.2.4 (SQLite version 3.35.4)</i><br>
+
+</dd>
+<dt><b>4.6.8</b> - <i>March 2021</i></dt>
+<dd>
+Upgrade to <i>SQLite3 Multiple Ciphers version 1.2.3 (SQLite version 3.35.3)</i><br>
+
+</dd>
+<dt><b>4.6.7</b> - <i>March 2021</i></dt>
+<dd>
+Upgrade to <i>SQLite3 Multiple Ciphers version 1.2.2 (SQLite version 3.35.2)</i><br>
+
+</dd>
+<dt><b>4.6.6</b> - <i>March 2021</i></dt>
+<dd>
+Upgrade to <i>SQLite3 Multiple Ciphers version 1.2.1 (SQLite version 3.35.1)</i><br>
+
+</dd>
+<dt><b>4.6.5</b> - <i>March 2021</i></dt>
+<dd>
+Upgrade to <i>SQLite3 Multiple Ciphers version 1.2.0 (SQLite version 3.35.0)</i><br>
+Enabled new SQLite Math Extension<br>
+Fixed a memory leak in method wxSQLite3Database::GetTable<br>
+Adjusted build files (DLL builds with MinGW/GCC used wrong DLL file extension)<br>
+
+</dd>
+<dt><b>4.6.4</b> - <i>December 2020</i></dt>
+<dd>
+Upgrade to <i>SQLite3 Multiple Ciphers version 1.1.3</i><br>
+Adjusted autotool build files to enable AES hardware support if available<br>
+
+</dd>
+<dt><b>4.6.3</b> - <i>December 2020</i></dt>
+<dd>
+Upgrade to <i>SQLite3 Multiple Ciphers version 1.1.2</i><br>
+Adjusted build files for MinGW<br>
+
+</dd>
+<dt><b>4.6.2</b> - <i>December 2020</i></dt>
+<dd>
+Upgrade to <i>SQLite3 Multiple Ciphers version 1.1.1</i><br>
+Upgrade to <i>SQLite version 3.34.0</i><br>
+Added method wxSQLite3Database::QueryTransactionState<br>
+
+</dd>
+<dt><b>4.6.1</b> - <i>October 2020</i></dt>
+<dd>
+Added SQLite VSV extension (Variably Separated Values)<br>
+
+</dd>
+<dt><b>4.6.0</b> - <i>August 2020</i></dt>
+<dd>
+Use SQLite encryption extension "SQLite3 Multiple Ciphers"<br>
+Upgrade to SQLite version 3.33.0<br>
+Added support for System.Data.SQLite's RC4 encryption<br>
+
+</dd>
+<dt><b>4.5.1</b> - <i>January 2020</i></dt>
+<dd>
+Upgrade to SQLite version 3.31.1<br>
+
+</dd>
+<dt><b>4.5.0</b> - <i>January 2020</i></dt>
+<dd>
+Upgrade to SQLite version 3.31.0<br>
+Modified API for wxSQLite3Database::CreateFunction methods<br>
+
+</dd>
+<dt><b>4.4.8</b> - <i>October 2019</i></dt>
+<dd>
+Upgrade to SQLite version 3.30.1<br>
+Adjusted encryption extension to support SQLite's shared cache mode<br>
+
+</dd>
+<dt><b>4.4.7</b> - <i>October 2019</i></dt>
+<dd>
+Upgrade to SQLite version 3.30.0<br>
+
+</dd>
+<dt><b>4.4.6</b> - <i>September 2019</i></dt>
+<dd>
+Fixed missing cipher application in method wxSQLite3Database::ReKey<br>
+
+</dd>
+<dt><b>4.4.5</b> - <i>August 2019</i></dt>
+<dd>
+Fixed broken compatibility with wxWidgets 2.8.12<br>
+
+</dd>
+<dt><b>4.4.4</b> - <i>August 2019</i></dt>
+<dd>
+Upgrade to SQLite version 3.29.0<br>
+Added SQLite logging support<br>
+Added build support for VS2019<br>
+Added CMake support (PR #63)<br>
+Updated build files to overcome problems with static builds (issue #73)<br>
+Eliminated duplication of error messages for different wxWidgets builds (PR #64)<br>
+Fixed missing call to progress callback in wxSQLite3Database::Restore (PR #66)<br>
+Fixed issue #58 with silently failing wxSQLite3Transaction::Commit method<br>
+Fixed issue with named collections which could result in crashes (PR #59)<br>
+
+</dd>
+<dt><b>4.4.3</b> - <i>May 2019</i></dt>
+<dd>
+Upgrade to SQLite version 3.28.0<br>
+
+</dd>
+<dt><b>4.4.2</b> - <i>February 2019</i></dt>
+<dd>
+Upgrade to SQLite version 3.27.2<br>
+
+</dd>
+<dt><b>4.4.1</b> - <i>February 2019</i></dt>
+<dd>
+Upgrade to SQLite version 3.27.1<br>
+
+</dd>
+<dt><b>4.4.0</b> - <i>December 2018</i></dt>
+<dd>
+Upgrade to SQLite version 3.26.0<br>
+Added support for the SQLCipher 4 database format<br>
+
+</dd>
+<dt><b>4.3.0</b> - <i>November 2018</i></dt>
+<dd>
+Upgrade to SQLite version 3.25.3<br>
+Adjusted encryption extension to support cipher configuration via database URI<br>
+
+</dd>
+<dt><b>4.2.0</b> - <i>October 2018</i></dt>
+<dd>
+Added method wxSQLite3Database::GetKeySalt to access the key salt of encrypted databases<br>
+Fixed memory leaks in methods wxSQLite3ResultSet::GetExpandedSQL and wxSQLite3Statement::GetExpandedSQL<br>
+Adjusted encryption extension to support raw key (and salt) for the <b>ChaCha20 (sqleet)</b> encryption scheme<br>
+
+</dd>
+<dt><b>4.1.1</b> - <i>October 2018</i></dt>
+<dd>
+Upgrade to SQLite version 3.25.2<br>
+
+</dd>
+<dt><b>4.1.0</b> - <i>September 2018</i></dt>
+<dd>
+Upgrade to SQLite version 3.25.1<br>
+Added support for SQL window functions<br>
+Adjusted encryption extension to check for matching page sizes on rekeying a database<br>
+
+</dd>
+<dt><b>4.0.4</b> - <i>June 2018</i></dt>
+<dd>
+Upgrade to SQLite version 3.24.0<br>
+
+</dd>
+<dt><b>4.0.3</b> - <i>April 2018</i></dt>
+<dd>
+Adjusted encryption extension to better support the SQLite backup API<br>
+
+</dd>
+<dt><b>4.0.2</b> - <i>April 2018</i></dt>
+<dd>
+Upgrade to SQLite version 3.23.1<br>
+
+</dd>
+<dt><b>4.0.1</b> - <i>April 2018</i></dt>
+<dd>
+Fixed a bug in the rekeying function of the encryption extension<br>
+
+</dd>
+<dt><b>4.0.0</b> - <i>April 2018</i></dt>
+<dd>
+Introduced multi-cipher support at runtime<br>
+Added methods for attaching/detaching databases<br>
+Cleaned up code using statement buffers<br>
+Improved constness of methods<br>
+Upgrade to SQLite version 3.23.0<br>
+
+</dd>
+<dt><b>3.5.9</b> - <i>January 2018</i></dt>
+<dd>
+Upgrade to SQLite version 3.22.0<br>
+
+</dd>
 <dt><b>3.5.8</b> - <i>November 2017</i></dt>
 <dd>
 Upgrade to SQLite version 3.21.0<br>
@@ -223,11 +432,11 @@ and for wxSQLite3 (experimental)<br>
 </dd>
 <dt><b>2.1.3</b> - <i>August 2011</i></dt>
 <dd>
-Corrected default behaviour for attached databases in case of
+Corrected default behavior for attached databases in case of
 an encrypted main database. (Now the attached database uses the same
 encryption key as the main database if no explicit key is given.
 Previously the attached database remained unencrypted.)<br>
-Added an optional progress callback for metheods Backup and Restore<br>
+Added an optional progress callback for methods Backup and Restore<br>
 Added method SetBackupRestorePageCount to set the number of pages
 to be copied in one cycle of the backup/restore process<br>
 
@@ -289,7 +498,7 @@ Added mathod FormatV to class wxSQLite3StatementBuffer<br>
 <dt><b>1.9.8</b> - <i>February 2010</i></dt>
 <dd>
 Upgrade to SQLite version 3.6.22<br>
-Fixed a bug when compiling without precompiled header support
+Fixed a bug when compiling without pre-compiled header support
 (by including wx/arrstr.h)<br>
 
 </dd>
@@ -358,7 +567,7 @@ Added static methods to initialize and shutdown the SQLite library.<br>
 Changed build system to support static library build against shared
 wxWidgets build on Linux.<br>
 Changed behaviour of wxSQLite3Database::Close method to finalize
-all unfinalized prepared statements.
+all not-finalized prepared statements.
 
 </dd>
 <dt><b>1.8.5</b> - <i>June 2008</i></dt>
@@ -519,7 +728,7 @@ First public release
 
 \author Ulrich Telle (ulrich DOT telle AT gmx DOT de)
 
-\section ackn Acknowledgements
+\section ackn Acknowledgments
 
 Kudos to <b>Fred Cailleau-Lepetit</b> for developing <b>wxSQLite+</b> as a sample demonstrating
 the wxWidgets components <b>wxAUI</b> and <b>wxSQLite3</b> and for allowing it to be included
@@ -531,12 +740,13 @@ The following people have contributed to wxSQLite3:
 <li>Francesco Montorsi (enhancement of the build system)</li>
 <li>Neville Dastur (enhancement of the method TableExists)</li>
 <li>Tobias Langner (RAII class for managing transactions)</li>
+<li>Deamhan (CMake support and various bug fixes)</li>
 </ul>
 
  */
 
-#ifndef _WX_SQLITE3_DEF_H_
-#define _WX_SQLITE3_DEF_H_
+#ifndef WX_SQLITE3_DEF_H_
+#define WX_SQLITE3_DEF_H_
 
 #if defined(WXMAKINGLIB_WXSQLITE3)
   #define WXDLLIMPEXP_SQLITE3
@@ -560,4 +770,4 @@ The following people have contributed to wxSQLite3:
   #define WXDLLIMPEXP_FWD_SQLITE3 WXDLLIMPEXP_SQLITE3
 #endif
 
-#endif // _WX_SQLITE3_DEF_H_
+#endif // WX_SQLITE3_DEF_H_

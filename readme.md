@@ -17,14 +17,136 @@ to/from UTF-8. Special care has to be taken if external administration
 tools are used to modify the database contents, since not all of these
 tools operate in Unicode or UTF-8 mode.
 
+Since version 1.7.0 **wxSQLite3** includes a key-based SQLite3 encryption
+extension using AES encryption. The decision whether to use 128 bit or
+256 bit AES encryption had to be made at compile time. Starting with version
+4.0.0 the encryption extension allows to select the cipher scheme at runtime.
+
+Currently the following encryption schemes are supported:
+
+- AES 128 Bit CBC - No HMAC ([wxSQLite3](https://github.com/utelle/wxsqlite3))
+- AES 256 Bit CBC - No HMAC ([wxSQLite3](https://github.com/utelle/wxsqlite3))
+- ChaCha20 - Poly1305 HMAC ([sqleet](https://github.com/resilar/sqleet)) (**default**)
+- AES 256 Bit CBC - SHA1/SHA256/SHA512 HMAC ([SQLCipher](https://www.zetetic.net/sqlcipher/) versions 1 - 4) 
+- RC4 - No HMAC ([System.Data.SQLite](http://system.data.sqlite.org/))
+
+## Important Notes
+
+With the release of SQLite version 3.32.0 on May 22, 2020 critical changes to the public SQLite code finally took officially effect, although they weren't officially announced. They were introduced on Feb 7, 2020: ["Simplify the code by removing the unsupported and undocumented SQLITE_HAS_CODEC compile-time option"](https://www.sqlite.org/src/timeline?c=5a877221ce90e752). As a consequence, updating the _wxSQLite3 encryption extension_ to support SQLite version 3.32.0 and later was no longer possible.
+
+Since August 2020 a new implementation of an encryption extension, capable of supporting SQLite version 3.32.0 and later, is available as a separate project, [SQLite3 Multiple Ciphers](https://github.com/utelle/SQLite3MultipleCiphers). Starting with the release of **wxSQLite3 4.6.0** this new implementation is used.
+
+## Table of Contents
+
 - [Version history](#history)
 - [Installation](#install)
 - [Optional features](#optional)
+- [Key based database encryption support](#encryption)
 - [Static SQLite library](#sqlite-static)
+- [License](#license)
 - [Acknowledgements](#acknowledge)
 
 ## <a name="history"></a>Version history
 
+* 4.7.3 - *June 2021*
+  - Upgrade to SQLite3 Multiple Ciphers version 1.3.3 (SQLite version 3.36.0)
+* 4.7.2 - *May 2021*
+  - Upgrade to SQLite3 Multiple Ciphers version 1.3.2 (SQLite version 3.35.5)
+* 4.7.1 - *April 2021*
+  - Upgrade to SQLite3 Multiple Ciphers version 1.3.1 (SQLite version 3.35.5)
+* 4.7.0 - *April 2021*
+  - Upgrade to SQLite3 Multiple Ciphers version 1.3.0 (SQLite version 3.35.5)
+* 4.6.10 - *April 2021*
+  - Upgrade to SQLite3 Multiple Ciphers version 1.2.5 (SQLite version 3.35.5)
+* 4.6.9 - *April 2021*
+  - Upgrade to SQLite3 Multiple Ciphers version 1.2.4 (SQLite version 3.35.4)
+* 4.6.8 - *March 2021*
+  - Upgrade to SQLite3 Multiple Ciphers version 1.2.3 (SQLite version 3.35.3)
+* 4.6.7 - *March 2021*
+  - Upgrade to SQLite3 Multiple Ciphers version 1.2.2 (SQLite version 3.35.2)
+* 4.6.6 - *March 2021*
+  - Upgrade to SQLite3 Multiple Ciphers version 1.2.1 (SQLite version 3.35.1)
+* 4.6.5 - *March 2021*
+  - Upgrade to SQLite3 Multiple Ciphers version 1.2.0 (SQLite version 3.35.0)
+  - Enabled new SQLite Math Extension
+  - Fixed a memory leak in method wxSQLite3Database::GetTable
+  - Adjusted build files (DLL builds with MinGW/GCC used wrong DLL file extension)
+* 4.6.4 - *December 2020*
+  - Upgrade to SQLite3 Multiple Ciphers version 1.1.3
+  - Adjusted autotool build files to enable AES hardware support if available
+* 4.6.3 - *December 2020*
+  - Upgrade to SQLite3 Multiple Ciphers version 1.1.2
+  - Adjusted build files for MinGW
+* 4.6.2 - *December 2020*
+  - Upgrade to SQLite3 Multiple Ciphers version 1.1.1
+  - Upgrade to SQLite version 3.34.0
+  - Added method `wxSQLite3Database::QueryTransactionState`
+* 4.6.1 - *October 2020*
+  - Added SQLite VSV extension (Variably Separated Values)
+* 4.6.0 - *August 2020*
+  - Use SQLite encryption extension _SQLite3 Multiple Ciphers_
+  - Upgrade to SQLite version 3.33.0
+  - Added support for System.Data.SQLite's RC4 encryption
+* 4.5.1 - *January 2020*
+  - Upgrade to SQLite version 3.31.1
+* 4.5.0 - *January 2020*
+  - Upgrade to SQLite version 3.31.0
+  - Modified API for wxSQLite3Database::CreateFunction methods
+* 4.4.8 - *October 2019*
+  - Upgrade to SQLite version 3.30.1
+  - Adjusted encryption extension to support SQLite's shared cache mode
+* 4.4.7 - *October 2019*
+  - Upgrade to SQLite version 3.30.0
+* 4.4.6 - *September 2019*
+  - Fixed missing cipher application in method wxSQLite3Database::ReKey
+* 4.4.5 - *August 2019*
+  - Fixed broken compatibility with wxWidgets 2.8.12
+* 4.4.4 - *August 2019*
+  - Upgrade to SQLite version 3.29.0
+  - Added SQLite logging support
+  - Added build support for VS2019
+  - Added CMake support (PR #63)
+  - Updated build files to overcome problems with static builds (issue #73)
+  - Eliminated duplication of error messages for different wxWidgets builds (PR #64)
+  - Fixed missing call to progress callback in wxSQLite3Database::Restore (PR #66)
+  - Fixed issue #58 with silently failing wxSQLite3Transaction::Commit method
+  - Fixed issue with named collections which could result in crashes (PR #59)
+* 4.4.3 - *May 2019*
+  - Upgrade to SQLite version 3.28.0
+* 4.4.2 - *February 2019*
+  - Upgrade to SQLite version 3.27.2
+* 4.4.1 - *February 2019*
+  - Upgrade to SQLite version 3.27.1
+* 4.4.0 - *December 2018*
+  - Upgrade to SQLite version 3.26.0
+  - Added support for the SQLCipher 4 database format
+* 4.3.0 - *November 2018*
+  - Upgrade to SQLite version 3.25.3
+  - Adjusted encryption extension to support cipher configuration via database URI
+* 4.2.0 - *October 2018*
+  - Added method wxSQLite3Database::GetKeySalt to access the key salt of encrypted databases
+  - Fixed memory leaks in methods wxSQLite3ResultSet::GetExpandedSQL and wxSQLite3Statement::GetExpandedSQL
+  - Adjusted encryption extension to support raw key (and salt) for the **ChaCha20 (sqleet)** encryption scheme
+* 4.1.1 - *October 2018*
+  - Upgrade to SQLite version 3.25.2
+* 4.1.0 - *September 2018*
+  - Upgrade to SQLite version 3.25.1
+  - Added support for SQL window functions
+  - Adjusted encryption extension to check for matching page sizes on rekeying a database
+* 4.0.4 - *June 2018*
+  - Upgrade to SQLite version 3.24.0
+* 4.0.3 - *April 2018*
+  - Adjusted encryption extension to better support the SQLite backup API
+* 4.0.2 - *April 2018*
+  - Upgrade to SQLite version 3.23.1
+* 4.0.1 - *April 2018*
+  - Fixed a bug in the rekeying function of the encryption extension
+* 4.0.0 - *April 2018*
+  - Added multi-cipher support
+  - Added methods for attaching/detaching databases
+  - Cleaned up code using statement buffers
+* 3.5.9 - *January 2018*
+  - Upgrade to SQLite version 3.22.0
 * 3.5.8 - *November 2017*
   - Upgrade to SQLite version 3.21.0
 * 3.5.7 - *September 2017*
@@ -267,25 +389,22 @@ tools operate in Unicode or UTF-8 mode.
 * 1.0 - *July 2005*
   - First public release
 
-## <a name="install"></a>Installation
+## <a name="install" />Installation
 
-After the release of **wxSQLite3** version 3.4.1 the build support
-has been overhauled. As of version 3.5.0 this process is still in progress.
-The build files for Windows platforms is now generated by a (slightly
-modified) version of [Premake 5](https://premake.github.io/)
-(based on Premake 5.0 alpha 11).  
+The build files for Windows platforms are now generated with
+[Premake 5](https://premake.github.io/) (version Premake 5.0 alpha 15).
 
 Ready to use project files are provided for Visual C++ 2010, 2012, 2013,
-2015, and 2017. Additionally, GNU Makefiles are provided supporting for
-example TDM-GCC MinGW.
+2015, 2017, and 2019. Additionally, GNU Makefiles are provided supporting for
+example MinGW-w64.
 
 For Visual Studio 2010+ solutions it is possible to customize the build
-by creating a wx_local.props file in the build directory which is used,
+by creating a `wx_local.props` file in the build directory which is used,
 if it exists, by the projects. The settings in that file override the
 default values for the properties. The typical way to make the file is
-to copy wx_setup.props to wx_local.props and then edit local.
+to copy `wx_setup.props` to `wx_local.props` and then edit locally.
 
-For GNU Makefiles the file config.gcc serves the same purpose as the
+For GNU Makefiles the file `config.gcc` serves the same purpose as the
 file wx_setup.props for Visual C++ projects.
 
 The customization files `wx_setup.props` resp. `config.gcc` allow to
@@ -295,7 +414,7 @@ root directory of the wxWidgets library.
 ### wxMSW
 
 When building on Win32 or Win64, you can use the makefiles or one of the
-Microsoft Visual Studio solution files in the BUILD folder.
+Microsoft Visual Studio solution files in the `build` folder.
 
 For Visual C++ the debugging properties are set up in such a way that
 debugging the sample applications should work right out of the box. For
@@ -316,12 +435,12 @@ to create or open an encrypted database. Use
 ```
 ATTACH DATABASE x AS y KEY z;
 ```
-to attach an encryted database.
+to attach an encrypted database.
 
 ### wxGTK
 
 When building on an autoconf-based system (like Linux/GNU-based
-systems), the first setp is to recreate the configure script doing:
+systems), the first setup is to recreate the configure script doing:
 
 ```
   autoreconf
@@ -342,106 +461,79 @@ The autoconf-based system also supports a `make install` target which
 builds the library and then copies the headers of the component to
 `/usr/local/include` and the lib to `/usr/local/lib`.
 
-## <a name="optional"></a>Optional features
+## <a name="optional" />Optional features
 
-### Optional Meta Data support
+SQLite has many optional features and offers a number of optional extensions.
+The below table lists the features that are enabled for **wxSQLite3** as
+default. For details, please see [SQLite Compile Time Options](https://www.sqlite.org/compile.html).
 
-If you want to use the optional SQLite meta data methods SQLite needs
-to be compiled with `SQLITE_ENABLE_COLUMN_METADATA`. Additionally the
-preprocessor symbol `WXSQLITE3_HAVE_METADATA` must be defined when
-compiling wxSQLite3. As default, meta data support is enabled.
+In case of memory constraints it is of course possible to disable unneeded features.
+However, this will usually require to modify the build files.
 
-### Optional key based database encryption support
+| Symbol | Description|
+| :--- | :--- |
+| SQLITE_DQS | Setting for the double-quoted string literal misfeature (default: disabled) |
+| SQLITE_ENABLE_CARRAY | C array extension |
+| SQLITE_ENABLE_COLUMN_METADATA | Access to meta-data about tables and queries |
+| SQLITE_ENABLE_CSV | CSV extension |
+| SQLITE_ENABLE_DEBUG | Enable additional debug features (default: off) |
+| SQLITE_ENABLE_DESERIALIZE | Option to enable the serialization interface |
+| SQLITE_ENABLE_EXPLAIN_COMMENTS | Enable additional comments in EXPLAIN output |
+| SQLITE_ENABLE_FTS3 | Version 3 of the full-text search engine |
+| SQLITE_ENABLE_FTS3_PARENTHESIS | Additional operators for query pattern parser |
+| SQLITE_ENABLE_FTS4 | Version 4 of the full-text search engine |
+| SQLITE_ENABLE_FTS5 | Version 5 of the full-text search engine |
+| SQLITE_ENABLE_GEOPOLY | Geopoly extension |
+| SQLITE_ENABLE_JSON1 | JSON SQL functions |
+| SQLITE_ENABLE_REGEXP | Regular expression extension |
+| SQLITE_ENABLE_RTREE | R*Tree index extension |
+| SQLITE_ENABLE_EXTFUNC | Extension with mathematical and string functions |
+| SQLITE_ENABLE_FILEIO | Extension with file I/O SQL functions |
+| SQLITE_ENABLE_SERIES | Series extension |
+| SQLITE_ENABLE_SHA3 | SHA3 extension |
+| SQLITE_ENABLE_UUID | Extension for handling handling RFC-4122 UUIDs |
+| SQLITE_MAX_ATTACHED=10 | Maximum Number Of Attached Databases (max. 125) |
+| SQLITE_SECURE_DELETE | Overwrite deleted content with zeros |
+| SQLITE_SOUNDEX | Enable soundex SQL function |
+| SQLITE_THREADSAFE | Setting the multithreading mode (default: serialized)  |
+| SQLITE_USE_URI | Enable URI file names |
+| SQLITE_USER_AUTHENTICATION | User authentication extension |
+
+## <a name="encryption" />Key based database encryption support
 
 The public release of SQLite contains hooks for key based database
 encryption, but the code for implementing this feature is not freely
 available. D. Richard Hipp offers a commercial solution
 (see [http://www.hwaci.com/sw/sqlite/prosupport.html#crypto](http://www.hwaci.com/sw/sqlite/prosupport.html#crypto)).
 
-If you want to use the optional SQLite key based database encryption
-you need to have the implementation of this feature and you have to
-compile SQLite with the option `SQLITE_HAS_CODEC`. 
-
-Additionally the preprocessor symbol `WXSQLITE3_HAVE_CODEC` must be
-defined when compiling wxSQLite3.
-
-There exist other commercial solutions, among them:
+There exist other closed-source commercial solutions, among them:
 
 - [http://www.sqlcrypt.com](http://www.sqlcrypt.com)
 - [http://www.sqlite-crypt.com](http://www.sqlite-crypt.com)
 
-Both use a slightly different encryption API, which is currently NOT
+Both use a slightly different encryption API, which is currently _NOT_
 supported by wxSQLite3.
 
 For Windows based systems there exists an open source solution:
-[System.Data.SQLite](http://System.Data.SQLite.org). Encrypted
-database files can be shared across Windows platforms only.
+[System.Data.SQLite](http://System.Data.SQLite.org). For SQLite version 3.32.0 or higher encryption support has been dropped.
+However, the new encryption extension _SQLite3 Multiple Ciphers_ allows to use this encryption scheme on all supported platforms.
 
-The author of wxSQLite3 has created a key based AES database encryption
-implementation for SQLite such that sharing encrypted database files
-across different platforms is supported. The implementation is based on
-knowledge gained from implementing encryption support for the wxCode
-component wxPdfDocument and from inspecting the source code of
-System.Data.SQLite. The code implementing this feature is available in
-directory `sqlite3/secure/src`. You may use this code on your own risk.
-The SQLite amalgamation source code is included. Optionally SQLite can be
-compiled including the extension function module created by Liam Healy.
-
-Starting with the release of *wxSQLite3 1.9.6* the encryption extension has
-been converted from C++ to pure C and is now compatible with the SQLite
-amalgamation source distribution. Just compile the file `sqlite3secure.c`
-which includes all required source files.
-
-Starting with the release of *wxSQLite3 1.9.8* the encryption extension
-includes an implementation of 256 bit AES encryption. The
-code comes without any warranty, use it at your own risk.
-Currently the decision whether to use 128 bit or 256 bit AES encryption
-has to be made at compile time. To enable 256 bit AES encryption define
-`CODEC_TYPE=CODEC_TYPE_AES256` (Default: `CODEC_TYPE=CODEC_TYPE_AES128`).
-
-Don't forget to specify the preprocessor symbols from the following list
-corresponding to your needs to get a valid SQLite library.
-
-The following 2 symbols enable encryption support:
-```
-SQLITE_HAS_CODEC
-CODEC_TYPE=CODEC_TYPE_AES128
-```
-In the latter symbol you may specify `CODEC_TYPE_AES256` instead of
-`CODEC_TYPE_AES128` to enable the support for AES 256 bit
-encryption.
-
-The following 2 symbols are usually always required resp. recommended:
-```
-SQLITE_CORE
-THREADSAFE=1
-```
-The following 3 symbols are optional to enable specific SQLite features:
-```
-SQLITE_SECURE_DELETE
-SQLITE_SOUNDEX
-SQLITE_ENABLE_COLUMN_METADATA
-```
-The following 6 symbols enable optional extension modules:
-```
-SQLITE_ENABLE_FTS3
-SQLITE_ENABLE_FTS3_PARENTHESIS
-SQLITE_ENABLE_FTS4
-SQLITE_ENABLE_FTS5
-SQLITE_ENABLE_JSON1
-SQLITE_ENABLE_RTREE
-```
-Precompiled binaries of the SQLite3 DLL for Windows are provided as separate downloads.
-Support for the optional SQLite meta data methods and the optional key based database
-encryption (128 resp. 256 bit AES) is included. The modules FTS5, JSON1, RTREE, and
-ExtensionFunctions are included as well.
+**wxSQLite3** uses now the new encryption extension [SQLite3 Multiple Ciphers](https://github.com/utelle/SQLite3MultipleCiphers).
+Precompiled binaries of the SQLite3 DLL and the SQLite3 shell  for Windows are now provided by this new separate project.
 
 ## <a name="sqlite-static"></a>Using statically linked SQLite library on Windows
 
 Starting with wxSQLite3 version 3.5.0 the SQLite3 library is compiled as an
 integrated part of wxSQLite3. A separate SQLite3 DLL is not required any longer.
 
-## <a name="acknowledge"></a>Acknowledgements
+## <a name="license" />License
+
+**wxSQLite3** is free software: you can redistribute it and/or modify it
+under the terms of the GNU Lesser General Public License version 3
+or later as published by the Free Software Foundation,
+with the wxWindows 3.1 exception.
+
+## <a name="acknowledge" />Acknowledgements
 
 The following people have contributed to **wxSQLite3**:
 

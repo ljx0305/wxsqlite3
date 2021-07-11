@@ -1,12 +1,11 @@
-/////////////////////////////////////////////////////////////////////////////
-// Name:        foldertree.cpp
-// Purpose:     
-// Author:      Ulrich Telle
-// Modified by: 
-// Created:     2014-05-11
-// Copyright:   (c) Ulrich Telle
-// Licence:     wxWindows licence
-/////////////////////////////////////////////////////////////////////////////
+/*
+** Name:        foldertree.cpp
+** Purpose:     Treeview control for displaying a hierarchical folder structure
+** Author:      Ulrich Telle
+** Created:     2014-05-11
+** Copyright:   (c) 2014-2018 Ulrich Telle
+** License:     LGPL-3.0+ WITH WxWindows-exception-3.1
+*/
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
@@ -98,7 +97,7 @@ FolderTreeCtrl::LoadFolderTree(int activeFolder)
                     wxString(wxT("  select f.fid, f.fparent, d.descendant, d.distance as distd, a.distance as dista, f.fname")) +
                     wxString(wxT("    from folderclosure d join folderclosure a on (a.descendant = d.descendant) join folders f on (f.fid = a.ancestor)")) +
                     wxString(wxT("    where d.ancestor = 1 and d.descendant != d.ancestor order by d.descendant, a.distance desc")) +
-                    wxString(wxT(") group by descendant order by path;"));
+                    wxString(wxT(") group by descendant having dista = min(dista) order by path;"));
 
   folderNode = new FolderTreeItem(1, 1, wxT("/"));
   parentLevel = 0;

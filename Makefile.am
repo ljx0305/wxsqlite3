@@ -1,18 +1,32 @@
 # Process this file with automake to create Makefile.in for wxsqlite3 library
 #
-# Copyright (C) 2017 Ulrich Telle <ulrich@telle-online.de>, Vadim Zeitlin <vadim@wxwidgets.org>
+# Copyright (C) 2017-2020 Ulrich Telle <ulrich@telle-online.de>, Vadim Zeitlin <vadim@wxwidgets.org>
 #
 # This file is covered by the same licence as the entire wxSQLite3 package.
+
+if HOST_X86
+X86_FLAGS = -msse4.2 -maes 
+else
+X86_FLAGS =
+endif
+ 
+if HOST_ARM
+ARM_FLAGS = -march=native 
+else
+ARM_FLAGS =
+endif
 
 ACLOCAL_AMFLAGS = -I admin/m4
 
 # Flags used for compiling all the targets and linking all the executables
 # (libraries use LIBADD which is set for lib@WXSQLITE3_LIBNAME@.la only).
-AM_CXXFLAGS = -I$(top_srcdir)/include -I$(top_srcdir)/sqlite3/secure/src $(WX_CXXFLAGS)
-AM_CFLAGS   = -I$(top_srcdir)/include -I$(top_srcdir)/sqlite3/secure/src $(WX_CXXFLAGS)
+AM_CXXFLAGS = -I$(top_srcdir)/include -I$(top_srcdir)/src $(WX_CXXFLAGS)
+AM_CFLAGS   = -I$(top_srcdir)/include -I$(top_srcdir)/src $(WX_CXXFLAGS)
 
-AM_CXXFLAGS += -DwxUSE_DYNAMIC_SQLITE3_LOAD=0 -DWXSQLITE3_HAVE_METADATA=1 -DWXSQLITE3_USER_AUTHENTICATION=1 -DWXSQLITE3_HAVE_CODEC=1 -DWXSQLITE3_HAVE_LOAD_EXTENSION=0
-AM_CFLAGS += -DTHREADSAFE=1 -DSQLITE_MAX_ATTACHED=10 -DSQLITE_SOUNDEX -DSQLITE_ENABLE_COLUMN_METADATA -DSQLITE_HAS_CODEC -DSQLITE_SECURE_DELETE -DSQLITE_ENABLE_FTS3 -DSQLITE_ENABLE_FTS3_PARENTHESIS -DSQLITE_ENABLE_FTS4 -DSQLITE_ENABLE_FTS5 -DSQLITE_ENABLE_JSON1 -DSQLITE_ENABLE_RTREE -DSQLITE_CORE -DSQLITE_ENABLE_EXTFUNC -DSQLITE_ENABLE_CSV -DSQLITE_ENABLE_SHA3 -DSQLITE_ENABLE_CARRAY -DSQLITE_ENABLE_FILEIO -DSQLITE_ENABLE_SERIES -DSQLITE_USE_URI -DSQLITE_USER_AUTHENTICATION 
+AM_CXXFLAGS += -DSQLITE_ENABLE_COLUMN_METADATA=1 -DSQLITE_USER_AUTHENTICATION=1
+AM_CFLAGS += -std=c99 -DSQLITE_THREADSAFE=1 -DSQLITE_DQS=0 -DSQLITE_MAX_ATTACHED=10 -DSQLITE_ENABLE_EXPLAIN_COMMENTS=1 -DSQLITE_SOUNDEX=1 -DSQLITE_ENABLE_COLUMN_METADATA=1 -DSQLITE_SECURE_DELETE=1 -DSQLITE_ENABLE_DESERIALIZE=1 -DSQLITE_ENABLE_FTS3=1 -DSQLITE_ENABLE_FTS3_PARENTHESIS=1 -DSQLITE_ENABLE_FTS4=1 -DSQLITE_ENABLE_FTS5=1 -DSQLITE_ENABLE_JSON1=1 -DSQLITE_ENABLE_RTREE=1 -DSQLITE_ENABLE_GEOPOLY=1 -DSQLITE_CORE=1 -DSQLITE_ENABLE_EXTFUNC=1 -DSQLITE_ENABLE_MATH_FUNCTIONS=1 -DSQLITE_ENABLE_CSV=1 -DSQLITE_ENABLE_VSV=1 -DSQLITE_ENABLE_SHA3=1 -DSQLITE_ENABLE_CARRAY=1 -DSQLITE_ENABLE_FILEIO=1 -DSQLITE_ENABLE_SERIES=1 -DSQLITE_ENABLE_UUID=1 -DSQLITE_ENABLE_REGEXP=1 -DSQLITE_TEMP_STORE=2 -DSQLITE_USE_URI=1 -DSQLITE_USER_AUTHENTICATION=1 $(X86_FLAGS) $(ARM_FLAGS)
+
+AM_LDFLAGS = -pthread -ldl -lm
 
 LDADD = lib@WXSQLITE3_LIBNAME@.la $(WX_LIBS)
 
@@ -28,7 +42,7 @@ pkgconfig_DATA = wxsqlite3.pc
 lib_LTLIBRARIES = lib@WXSQLITE3_LIBNAME@.la
 
 lib@WXSQLITE3_LIBNAME@_la_SOURCES = \
-    sqlite3/secure/src/sqlite3secure.c \
+    src/sqlite3mc_amalgamation.c \
     src/wxsqlite3.cpp
 
 includewx_HEADERS = \
@@ -37,22 +51,8 @@ includewx_HEADERS = \
     include/wx/wxsqlite3def.h
 
 noinst_HEADERS = \
-    include/wx/wxsqlite3dyn.h \
     include/wx/wxsqlite3opt.h \
-    sqlite3/secure/src/sqlite3.c \
-    sqlite3/secure/src/sha2.c \
-    sqlite3/secure/src/userauth.c \
-    sqlite3/secure/src/rijndael.c \
-    sqlite3/secure/src/codec.c \
-    sqlite3/secure/src/codecext.c \
-    sqlite3/secure/src/extensionfunctions.c \
-    sqlite3/secure/src/csv.c \
-    sqlite3/secure/src/codec.h \
-    sqlite3/secure/src/rijndael.h \
-    sqlite3/secure/src/sha2.h \
-    sqlite3/secure/src/sqlite3.h \
-    sqlite3/secure/src/sqlite3ext.h \
-    sqlite3/secure/src/sqlite3userauth.h
+    src/sqlite3mc_amalgamation.h 
 
 lib@WXSQLITE3_LIBNAME@_la_LDFLAGS = -no-undefined $(AM_LDFLAGS)
 lib@WXSQLITE3_LIBNAME@_la_LIBADD = $(WX_LIBS)
